@@ -44,7 +44,7 @@ function Product({ item }) {
 
   const handleSubmit = async () => {
     if (!user || (!review && rating === 0)) {
-      alert("Please login and provide at least rating or review.");
+      alert("provide at least rating or review.");
       return;
     }
 
@@ -137,7 +137,8 @@ function Product({ item }) {
                 >
                   <strong>{fb.email}</strong>
                   <br />
-                  {fb.rating && (
+                  
+                  {fb.rating>0 && (
                     <span style={{ color: "#ffc107" }}>
                       {"★".repeat(fb.rating)}
                       {"☆".repeat(5 - fb.rating)}
@@ -145,7 +146,7 @@ function Product({ item }) {
                   )}
                   <br />
                   {fb.review && <p>{fb.review}</p>}
-                  {fb.image && (
+                  {fb.image !="" && (
                     <img
                       src={fb.image}
                       alt="Review"
