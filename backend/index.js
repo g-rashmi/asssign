@@ -14,6 +14,7 @@ app.post("/api", async (req, res) => {
   if (!email || !productId || (rating == null && !review)) {
     return res.status(400).json({ error: "Required field is missing" });
   }
+ 
 
   try {
     const existingUser = await prisma.feedback.findUnique({
@@ -37,6 +38,7 @@ app.post("/api", async (req, res) => {
         review,
         email,
         product: { connect: { id: productId } },
+        image,
       },
     });
 

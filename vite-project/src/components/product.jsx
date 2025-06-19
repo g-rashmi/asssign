@@ -7,6 +7,7 @@ function Product({ item }) {
   const [hover, sethover] = useState(0);
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+  const [image,setimage]=useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     const fetchFeedbacks = async () => {
@@ -54,6 +55,7 @@ function Product({ item }) {
         productId: item.id,
         rating,
         review,
+        image,
       });
 
       alert("Feedback submitted successfully!");
@@ -83,7 +85,26 @@ function Product({ item }) {
             value={review}
             disabled={submitted}
           ></textarea>
+  <input
+            type="file"
+          
+              disabled={submitted}
+            onChange={(e)=>{ 
+ const file = e.target.files[0];
+  if (!file) return;
 
+  
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setimage(reader.result); 
+  };
+  reader.readAsDataURL(file);
+
+              
+            }}
+                 className="form-control mt-2"
+          />
           <div>
             {[1, 2, 3, 4, 5].map((star) => (
               <span
@@ -130,7 +151,11 @@ function Product({ item }) {
                   )}
                   <br />
                   {fb.review && <p>{fb.review}</p>}
+                  {fb.image&&<img src={fb.image} alt="Review" 
+    style={{ width: "100%", maxHeight: "200px", objectFit: "contain", marginTop: "5px" }}/>}
                 </div>
+
+                
               ))
             )}
           </div>
