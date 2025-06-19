@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {back_url} from "../b.js";
 
 function Product({ item }) {
   const [review, setreview] = useState("");
@@ -13,7 +14,7 @@ function Product({ item }) {
     const fetchFeedbacks = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:4000/feed?productId=${item.id}`
+          ` ${back_url}/feed?productId=${item.id}`
         );
         console.log(res.data);
         setFeedbacks(res.data);
@@ -29,7 +30,7 @@ function Product({ item }) {
   useEffect(() => {
     const checkSubmitted = async () => {
       if (user?.email) {
-        const res = await axios.get(`http://localhost:4000/check-feedback`, {
+        const res = await axios.get(`${back_url}/check-feedback`, {
           params: {
             email: user.email,
             productId: item.id,
@@ -50,7 +51,7 @@ function Product({ item }) {
     }
 
     try {
-      await axios.post("http://localhost:4000/api", {
+      await axios.post(`${back_url}/api`, {
         email: user.email,
         productId: item.id,
         rating,
