@@ -63,7 +63,9 @@ function Product({ item }) {
       alert(error);
     }
   };
-
+function bufferToBase64(buffer) {
+  return buffer.toString('base64');
+}
   return (
     <div>
       <div className="card" style={{ width: "18rem" }}>
@@ -86,16 +88,15 @@ function Product({ item }) {
           ></textarea>
           <input
             type="file"
+            accept="image/*"
             disabled={submitted}
             onChange={(e) => {
               const file = e.target.files[0];
               if (!file) return;
 
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                setimage(reader.result);
-              };
-              reader.readAsDataURL(file);
+               setimage( bufferToBase64(file));
+              
+              
             }}
             className="form-control mt-2"
           />
