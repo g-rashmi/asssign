@@ -18,7 +18,7 @@ function Navbar() {
     <div className="navbar">
       <div className="user-info">
         <img src={user.photoURL} alt="User" className="user-image" />
-        <div className="user-details">
+        <div className="user-details" style={{display:"flex"}}>
           <h2>{user.displayName}</h2>
           <p>{user.email}</p>
         </div>

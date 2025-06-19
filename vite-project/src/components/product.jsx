@@ -63,9 +63,13 @@ function Product({ item }) {
       alert(error);
     }
   };
-function bufferToBase64(buffer) {
-  return buffer.toString('base64');
-}
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
   return (
     <div>
       <div className="card" style={{ width: "18rem" }}>
@@ -90,13 +94,8 @@ function bufferToBase64(buffer) {
             type="file"
             accept="image/*"
             disabled={submitted}
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-
-               setimage( bufferToBase64(file));
-              
-              
+            onChange={async (e) => {
+              setimage((await toBase64) * e.target.files[0]);
             }}
             className="form-control mt-2"
           />
@@ -138,8 +137,8 @@ function bufferToBase64(buffer) {
                 >
                   <strong>{fb.email}</strong>
                   <br />
-                  
-                  {fb.rating>0 && (
+
+                  {fb.rating > 0 && (
                     <span style={{ color: "#ffc107" }}>
                       {"★".repeat(fb.rating)}
                       {"☆".repeat(5 - fb.rating)}
@@ -147,7 +146,7 @@ function bufferToBase64(buffer) {
                   )}
                   <br />
                   {fb.review && <p>{fb.review}</p>}
-                  {fb.image !="" && (
+                  {fb.image != "" && (
                     <img
                       src={fb.image}
                       alt="Review"
