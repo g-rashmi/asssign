@@ -96,7 +96,9 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-
+app.get("/",(req,res)=>{
+  res.send("hii there");
+})
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
