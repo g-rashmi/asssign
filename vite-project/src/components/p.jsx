@@ -1,4 +1,3 @@
-// Productlist.jsx
 
 import { product } from "../config";
 import Navbar from "./Nav";
