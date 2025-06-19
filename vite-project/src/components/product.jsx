@@ -68,7 +68,8 @@ function Product({ item }) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
+      reader.onerror = reject; 
+      
     });
   return (
     <div>
@@ -95,7 +96,8 @@ function Product({ item }) {
             accept="image/*"
             disabled={submitted}
             onChange={async (e) => {
-              setimage((await toBase64) * e.target.files[0]);
+              const f = await toBase64(e.target.files[0]);
+              setimage(f);
             }}
             className="form-control mt-2"
           />
@@ -146,7 +148,9 @@ function Product({ item }) {
                   )}
                   <br />
                   {fb.review && <p>{fb.review}</p>}
+                  { console.log(fb.image) }
                   {fb.image != "" && (
+                    
                     <img
                       src={fb.image}
                       alt="Review"
