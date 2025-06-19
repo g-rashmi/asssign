@@ -24,11 +24,17 @@ model Feedback {
   rating     Int?     
   review     String?   
   createdAt  DateTime  @default(now())
-
+ 
   email      String
    image     String? 
   product  Product  @relation(fields:[productId],references:[id])
   productId  Int
   
   @@unique([email,productId])
+}
+
+model mostfreq {
+  count   Int  
+  id         Int       @id @default(autoincrement())
+  word     String? @unique
 }

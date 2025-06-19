@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.post("/api", async (req, res) => {
   const { productId, rating, review, email, image } = req.body;
-console.log(req.body);
+  console.log(req.body);
   if (!email || !productId || (rating == null && !review)) {
     return res.status(400).json({ error: "Required field is missing" });
   }
@@ -41,6 +41,30 @@ console.log(req.body);
         product: { connect: { id: productId } },
       },
     });
+    if (review) {
+      const words = review.split(/\s+/);
+      for (const it of words) {
+        const word = it.toLowerCase();
+        if (stopwords.has(word)) continue;
+        else {
+          const x = 0;
+          const exit = await prisma.mostfreq.findUnique({
+            where: {
+              word,
+            },
+          });
+          if (exit) {
+            x = exit.count;
+          }
+          await prisma.mostfreq.create({
+            data: {
+              count: x + 1,
+              word,
+            },
+          });
+        }
+      }
+    }
 
     res
       .status(201)
@@ -104,9 +128,125 @@ app.get("/products", async (req, res) => {
   });
   res.json(f);
 });
+const stopwords = new Set([
+  "the",
+  "is",
+  "and",
+  "a",
+  "an",
+  "to",
+  "for",
+  "with",
+  "on",
+  "in",
+  "of",
+  "at",
+  "this",
+  "that",
+  "where",
+  "whom",
+  "who",
+  "it",
+  "was",
+  "are",
+  "i",
+  "my",
+  "very",
+  "so",
+  "but",
+  "is",
+  "am",
+  "if",
+  "he",
+  "she",
+  "they",
+  "them",
+  "we",
+  "us",
+  "you",
+  "your",
+  "his",
+  "her",
+  "its",
+  "their",
+  "there",
+  "here",
+  "what",
+  "which",
+  "when",
+  "why",
+  "how",
+  "all",
+  "some",
+  "any",
+  "no",
+  "not",
+  "just",
+  "like",
+  "more",
+  "than",
+  "out",
+  "up",
+  "down",
+  "over",
+  "under",
+  "into",
+  "about",
+  "as",
+  "by",
+  "from",
+  "at",
+  "be",
+  "been",
+  "being",
+  "will",
+  "would",
+  "should",
+  "could",
+  "can",
+  "may",
+  "might",
+  "must",
+  "shall",
+  "do",
+  "does",
+  "did",
+  "doing",
+  "has",
+  "have",
+  "had",
+  "having",
+  "therefore",
+  "thus",
+  "hence",
+  "also",
+  "such",
+  "these",
+  "those",
+  "each",
+  "every",
+  "few",
+  "many",
+  "much",
+  "more",
+]);
+
 
 app.get("/", (req, res) => {
   res.send("hii there");
+});
+app.get("/mfreq", async (req, res) => {
+  const most_freq = await prisma.mostfreq.findMany({
+    where: {
+      count: {
+        gt: 1,
+      },
+    },
+    orderBy: {
+      count: "desc",
+    },
+  });
+  res.json(most_freq);
 });
 
 const PORT = process.env.PORT || 4000;
