@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { PrismaClient } = require ("@prisma/client"); 
+const { PrismaClient } = require("@prisma/client");
 
 const app = express();
 
@@ -10,12 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/api", async (req, res) => {
-  const { productId, rating, review, email } = req.body;
-
+  const { productId, rating, review, email, image } = req.body;
+console.log(req.body);
   if (!email || !productId || (rating == null && !review)) {
     return res.status(400).json({ error: "Required field is missing" });
   }
- 
 
   try {
     const existingUser = await prisma.feedback.findUnique({
@@ -38,8 +37,8 @@ app.post("/api", async (req, res) => {
         rating,
         review,
         email,
-        product: { connect: { id: productId } },
         image,
+        product: { connect: { id: productId } },
       },
     });
 
@@ -75,8 +74,8 @@ app.get("/check-feedback", async (req, res) => {
       return res.json({ exists: false });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Something went wrong" });
+    console.log(error);
+    res.status(500).json({ error });
   }
 });
 
@@ -97,12 +96,20 @@ app.get("/feed", async (req, res) => {
   }
 });
 
-app.get("/",(req,res)=>{
+app.get("/products", async (req, res) => {
+  const f = await prisma.product.findMany({
+    include: {
+      feedbacks: true,
+    },
+  });
+  res.json(f);
+});
+
+app.get("/", (req, res) => {
   res.send("hii there");
-})
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  
 });

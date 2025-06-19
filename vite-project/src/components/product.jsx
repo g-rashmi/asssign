@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {back_url} from "../b.js";
+import { back_url } from "../b.js";
 
 function Product({ item }) {
   const [review, setreview] = useState("");
@@ -8,14 +8,12 @@ function Product({ item }) {
   const [hover, sethover] = useState(0);
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [image,setimage]=useState(null);
+  const [image, setimage] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const res = await axios.get(
-          ` ${back_url}/feed?productId=${item.id}`
-        );
+        const res = await axios.get(`${back_url}/feed?productId=${item.id}`);
         console.log(res.data);
         setFeedbacks(res.data);
       } catch (error) {
@@ -25,7 +23,7 @@ function Product({ item }) {
     console.log(feedbacks);
 
     fetchFeedbacks();
-  }, [item.id,submitted]);
+  }, [item.id, submitted]);
 
   useEffect(() => {
     const checkSubmitted = async () => {
@@ -86,25 +84,20 @@ function Product({ item }) {
             value={review}
             disabled={submitted}
           ></textarea>
-  <input
+          <input
             type="file"
-          
-              disabled={submitted}
-            onChange={(e)=>{ 
- const file = e.target.files[0];
-  if (!file) return;
+            disabled={submitted}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (!file) return;
 
-  
-
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    setimage(reader.result); 
-  };
-  reader.readAsDataURL(file);
-
-              
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setimage(reader.result);
+              };
+              reader.readAsDataURL(file);
             }}
-                 className="form-control mt-2"
+            className="form-control mt-2"
           />
           <div>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -152,11 +145,19 @@ function Product({ item }) {
                   )}
                   <br />
                   {fb.review && <p>{fb.review}</p>}
-                  {fb.image&&<img src={fb.image} alt="Review" 
-    style={{ width: "100%", maxHeight: "200px", objectFit: "contain", marginTop: "5px" }}/>}
+                  {fb.image && (
+                    <img
+                      src={fb.image}
+                      alt="Review"
+                      style={{
+                        width: "100%",
+                        maxHeight: "200px",
+                        objectFit: "contain",
+                        marginTop: "5px",
+                      }}
+                    />
+                  )}
                 </div>
-
-                
               ))
             )}
           </div>

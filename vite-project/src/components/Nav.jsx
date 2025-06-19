@@ -1,6 +1,6 @@
 import { getAuth } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import "./Nav.css"; // import the CSS file
+import "./Nav.css"; 
 
 function Navbar() {
   const navigate = useNavigate();
