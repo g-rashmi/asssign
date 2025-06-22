@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../firebase';
 
+
 function Login() { 
   const navigate = useNavigate();
 
@@ -17,8 +18,11 @@ function Login() {
   name: result.user.displayName,
   email: result.user.email
 }));
+     
 
-      navigate('/products');
+
+        navigate('/products');
+     
     } catch (error) {
       console.log(error);
     }

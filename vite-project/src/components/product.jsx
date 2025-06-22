@@ -6,6 +6,7 @@ function Product({ item }) {
   const [review, setreview] = useState("");
   const [rating, setRating] = useState(0);
   const [hover, sethover] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [image, setimage] = useState("");
@@ -13,14 +14,15 @@ function Product({ item }) {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
+        setLoading(true);
         const res = await axios.get(`${back_url}/feed?productId=${item.id}`);
         console.log(res.data);
         setFeedbacks(res.data);
       } catch (error) {
         console.error("Error fetching feedback:", error);
       }
+      setLoading(false);
     };
-    console.log(feedbacks);
 
     fetchFeedbacks();
   }, [item.id, submitted]);
@@ -68,8 +70,7 @@ function Product({ item }) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
-      reader.onerror = reject; 
-      
+      reader.onerror = reject;
     });
   return (
     <div>
@@ -127,44 +128,45 @@ function Product({ item }) {
             {submitted ? "Submitted" : "Submit Review"}
           </button>
 
-          <div style={{ marginTop: "10px", textAlign: "left" }}>
-            <h6>Feedbacks:</h6>
-            {feedbacks.length === 0 ? (
-              <p>No reviews yet</p>
-            ) : (
-              feedbacks.map((fb) => (
-                <div
-                  key={fb.id}
-                  style={{ borderTop: "1px solid #ccc", paddingTop: "5px" }}
-                >
-                  <strong>{fb.email}</strong>
-                  <br />
-
-                  {fb.rating > 0 && (
-                    <span style={{ color: "#ffc107" }}>
-                      {"★".repeat(fb.rating)}
-                      {"☆".repeat(5 - fb.rating)}
-                    </span>
-                  )}
-                  <br />
-                  {fb.review && <p>{fb.review}</p>}
-                  { console.log(fb.image) }
-                  {fb.image != "" && (
-                    
-                    <img
-                      src={fb.image}
-                      alt="Review"
-                      style={{
-                        width: "100%",
-                        maxHeight: "200px",
-                        objectFit: "contain",
-                        marginTop: "5px",
-                      }}
-                    />
-                  )}
-                </div>
-              ))
-            )}
+          <div>
+            <div style={{ marginTop: "10px", textAlign: "left" }}>
+              <h6>Feedbacks:</h6>
+              {loading ? (
+                <p>Loading feedbacks...</p>
+              ) : feedbacks.length === 0 ? (
+                <p>No reviews yet</p>
+              ) : (
+                feedbacks.map((fb) => (
+                  <div
+                    key={fb.id}
+                    style={{ borderTop: "1px solid #ccc", paddingTop: "5px" }}
+                  >
+                    <strong>{fb.email}</strong>
+                    <br />
+                    {fb.rating > 0 && (
+                      <span style={{ color: "#ffc107" }}>
+                        {"★".repeat(fb.rating)}
+                        {"☆".repeat(5 - fb.rating)}
+                      </span>
+                    )}
+                    <br />
+                    {fb.review && <p>{fb.review}</p>}
+                    {fb.image && (
+                      <img
+                        src={fb.image}
+                        alt="Review"
+                        style={{
+                          width: "100%",
+                          maxHeight: "200px",
+                          objectFit: "contain",
+                          marginTop: "5px",
+                        }}
+                      />
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

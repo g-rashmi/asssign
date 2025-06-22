@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const app = express();
 
 const prisma = new PrismaClient();
+const sw = require("stopword");
 
 app.use(cors());
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use(express.json());
 app.post("/api", async (req, res) => {
   const { productId, rating, review, email, image } = req.body;
   console.log(req.body);
+
   if (!email || !productId || (rating == null && !review)) {
     return res.status(400).json({ error: "Required field is missing" });
   }
@@ -41,26 +43,27 @@ app.post("/api", async (req, res) => {
         product: { connect: { id: productId } },
       },
     });
+
+    // Keyword extraction from review
     if (review) {
-      const words = review.split(/\s+/);
-      for (const it of words) {
-        const word = it.toLowerCase();
-        if (stopwords.has(word)) continue;
-        else {
-          const x = 0;
-          const exit = await prisma.mostfreq.findUnique({
-            where: {
-              word,
-            },
+      const rawWords = review.toLowerCase().split(/\W+/); // Split on non-word chars
+      const filteredWords = sw.removeStopwords(rawWords);
+
+      for (const word of filteredWords) {
+        if (!word) continue;
+
+        const existing = await prisma.mostfreq.findUnique({
+          where: { word },
+        });
+
+        if (existing) {
+          await prisma.mostfreq.update({
+            where: { word },
+            data: { count: existing.count + 1 },
           });
-          if (exit) {
-            x = exit.count;
-          }
+        } else {
           await prisma.mostfreq.create({
-            data: {
-              count: x + 1,
-              word,
-            },
+            data: { word, count: 1 },
           });
         }
       }
@@ -128,109 +131,6 @@ app.get("/products", async (req, res) => {
   });
   res.json(f);
 });
-const stopwords = new Set([
-  "the",
-  "is",
-  "and",
-  "a",
-  "an",
-  "to",
-  "for",
-  "with",
-  "on",
-  "in",
-  "of",
-  "at",
-  "this",
-  "that",
-  "where",
-  "whom",
-  "who",
-  "it",
-  "was",
-  "are",
-  "i",
-  "my",
-  "very",
-  "so",
-  "but",
-  "is",
-  "am",
-  "if",
-  "he",
-  "she",
-  "they",
-  "them",
-  "we",
-  "us",
-  "you",
-  "your",
-  "his",
-  "her",
-  "its",
-  "their",
-  "there",
-  "here",
-  "what",
-  "which",
-  "when",
-  "why",
-  "how",
-  "all",
-  "some",
-  "any",
-  "no",
-  "not",
-  "just",
-  "like",
-  "more",
-  "than",
-  "out",
-  "up",
-  "down",
-  "over",
-  "under",
-  "into",
-  "about",
-  "as",
-  "by",
-  "from",
-  "at",
-  "be",
-  "been",
-  "being",
-  "will",
-  "would",
-  "should",
-  "could",
-  "can",
-  "may",
-  "might",
-  "must",
-  "shall",
-  "do",
-  "does",
-  "did",
-  "doing",
-  "has",
-  "have",
-  "had",
-  "having",
-  "therefore",
-  "thus",
-  "hence",
-  "also",
-  "such",
-  "these",
-  "those",
-  "each",
-  "every",
-  "few",
-  "many",
-  "much",
-  "more",
-]);
-
 
 app.get("/", (req, res) => {
   res.send("hii there");
