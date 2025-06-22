@@ -235,6 +235,7 @@ const stopwords = new Set([
 app.get("/", (req, res) => {
   res.send("hii there");
 });
+
 app.get("/mfreq", async (req, res) => {
   const most_freq = await prisma.mostfreq.findMany({
     where: {
