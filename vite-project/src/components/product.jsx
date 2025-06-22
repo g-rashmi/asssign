@@ -130,21 +130,18 @@ function Product({ item }) {
           sx={{ mb: 2 }}
         />
 
-        <Button
-          variant="outlined"
-          component="label"
-          fullWidth
-          disabled={submitted}
-          sx={{ mb: 2 }}
-        >
-          Upload image
-          <input
-            hidden
-            accept="image/*"
+        <input
             type="file"
-            onChange={async (e) => setImage(await toBase64(e.target.files[0]))}
+            accept="image/*"
+            disabled={submitted}
+            onChange={async (e) => {
+              if (e.target.files.length > 0) {
+                const f = await toBase64(e.target.files[0]);
+                setImage(f);
+              }
+            }}
+            className="form-control mb-3"
           />
-        </Button>
 
         <Box mb={2}>
           <Rating
@@ -156,7 +153,7 @@ function Product({ item }) {
 
         <Button
           variant="contained"
-          color="primary"
+          sx={{ backgroundColor: '#3A3F58'}}
           onClick={handleSubmit}
           fullWidth
           disabled={submitted}
@@ -167,7 +164,7 @@ function Product({ item }) {
         {mostf.length > 0 && (
           <Box mt={2}>
             <Typography variant="subtitle2" color="text.secondary">
-              Common Words:
+              
             </Typography>
             <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
               {mostf.map((word) => (
