@@ -1,41 +1,46 @@
-
-import { product } from "../config";
+import React from "react";
 import Navbar from "./Nav";
 import Product from "./product";
+import { product } from "../config";
+
+import { Box, Typography, Grid } from "@mui/material";
 
 function Productlist() {
- 
-
-  
-
   return (
-    <div>
-<div><Navbar/></div>
+    <>
+      <Navbar />
+
+      <Box sx={{ padding: { xs: 2, sm: 3, md: 4 } }}>
+       
+        <Typography
+          variant="h4"
+          component="h1"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: "bold" }}
+        >
+          Product List
+        </Typography>
+
     
-      <h1 className="container">Product List</h1>
-
-      <div
-        style={{
-          display: "flex",
-          gap: "30px",
-          margin: "40px",
-          textAlign: "center",
-          justifyContent: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        {product.map((item) => {
-         
-
-          return (
-            <div key={item.id}>
+        <Grid container spacing={3} justifyContent="center">
+          {product.map((item) => (
+            <Grid
+              item
+              key={item.id}
+              xs={12}
+              sm={6}
+              md={4}
+              lg={3}
+              display="flex"
+              justifyContent="center"
+            >
               <Product item={item} />
-              <br />
-            </div>
-          );
-        })}
-      </div>
-    </div>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </>
   );
 }
 

@@ -1,16 +1,30 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { back_url } from "../b.js";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  TextField,
+  Button,
+  Rating,
+  Box,
+  Chip,
+  Divider,
+  CircularProgress,
+  Grid,
+  Avatar,
+} from "@mui/material";
 
 function Product({ item }) {
-  const [review, setreview] = useState("");
+  const [review, setReview] = useState("");
   const [rating, setRating] = useState(0);
-  const [hover, sethover] = useState(0);
   const [loading, setLoading] = useState(true);
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [image, setimage] = useState("");
-  const [mostf, setmostf] = useState([]);
+  const [image, setImage] = useState("");
+  const [mostf, setMostf] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
@@ -18,22 +32,22 @@ function Product({ item }) {
       try {
         setLoading(true);
         const res = await axios.get(`${back_url}/feed?productId=${item.id}`);
-        console.log(res.data);
         setFeedbacks(res.data);
       } catch (error) {
-        console.error("Error fetching feedback:", error);
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
-    const fetchmostfreq = async () => {
+    const fetchMostfreq = async () => {
       try {
         const res = await axios.get(`${back_url}/mfreq?productId=${item.id}`);
-        setmostf(res.data);
-      } catch (err) {
-        console.error(err);
+        setMostf(res.data);
+      } catch (error) {
+        console.error(error);
       }
     };
-    fetchmostfreq();
+    fetchMostfreq();
     fetchFeedbacks();
   }, [item.id, submitted]);
 
@@ -41,22 +55,25 @@ function Product({ item }) {
     const checkSubmitted = async () => {
       if (user?.email) {
         const res = await axios.get(`${back_url}/check-feedback`, {
-          params: {
-            email: user.email,
-            productId: item.id,
-          },
+          params: { email: user.email, productId: item.id },
         });
-        if (res.data.exists) {
-          setSubmitted(true);
-        }
+        if (res.data.exists) setSubmitted(true);
       }
     };
     checkSubmitted();
   }, [item.id, user?.email]);
 
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
   const handleSubmit = async () => {
     if (!user || (!review && rating === 0)) {
-      alert("provide at least rating or review.");
+      alert("Provide at least a rating or review.");
       return;
     }
 
@@ -75,127 +92,128 @@ function Product({ item }) {
       alert(error);
     }
   };
-  const toBase64 = (file) =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-    });
+
   return (
-    <div>
-      <div className="card" style={{ width: "18rem" }}>
-        <img
-          src={item.image}
-          className="card-img-top"
-          alt={item.name}
-          style={{ height: "212px" }}
+    <Card
+      sx={{
+        maxWidth: 400,
+        mx: "auto",
+        my: 2,
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+    >
+      <CardMedia
+        component="img"
+        height="212"
+        image={item.image}
+        alt={item.name}
+        sx={{ objectFit: "cover" }}
+      />
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          {item.name}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" mb={2}>
+          {item.description}
+        </Typography>
+
+        <TextField
+          label="Your feedback"
+          variant="outlined"
+          fullWidth
+          multiline
+          minRows={2}
+          disabled={submitted}
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+          sx={{ mb: 2 }}
         />
-        <div className="card-body">
-          <h5 className="card-title">{item.name}</h5>
-          <p className="card-text">{item.description}</p>
 
-          <textarea
-            className="form-control"
-            placeholder="Write your feedback"
-            onChange={(e) => setreview(e.target.value)}
-            value={review}
-            disabled={submitted}
-          ></textarea>
+        <Button
+          variant="outlined"
+          component="label"
+          fullWidth
+          disabled={submitted}
+          sx={{ mb: 2 }}
+        >
+          Upload image
           <input
-            type="file"
+            hidden
             accept="image/*"
-            disabled={submitted}
-            onChange={async (e) => {
-              const f = await toBase64(e.target.files[0]);
-              setimage(f);
-            }}
-            className="form-control mt-2"
+            type="file"
+            onChange={async (e) => setImage(await toBase64(e.target.files[0]))}
           />
-          <div>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                style={{
-                  fontSize: "20px",
-                  cursor: !submitted ? "pointer" : "default",
-                  color: star <= (hover || rating) ? "#ffc107" : "#e4e5e9",
-                }}
-                onClick={() => !submitted && setRating(star)}
-                onMouseEnter={() => !submitted && sethover(star)}
-                onMouseLeave={() => !submitted && sethover(0)}
-              >
-                ★
-              </span>
-            ))}
-          </div>
+        </Button>
 
-          <button
-            className="btn btn-success"
-            onClick={handleSubmit}
-            disabled={submitted}
-          >
-            {submitted ? "Submitted" : "Submit Review"}
-          </button>
+        <Box mb={2}>
+          <Rating
+            value={rating}
+            readOnly={submitted}
+            onChange={(_, newValue) => setRating(newValue)}
+          />
+        </Box>
 
-          <div style={{ marginTop: "15px", textAlign: "left" }}>
-            {mostf.length > 0 && (
-                <div >
-                  <div className="d-flex flex-wrap gap-2 mt-2">
-                    {mostf.map((word) => (
-                      <span key={word} className="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill">
-                        {word}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          fullWidth
+          disabled={submitted}
+        >
+          {submitted ? "Submitted" : "Submit Review"}
+        </Button>
+
+        {mostf.length > 0 && (
+          <Box mt={2}>
+            <Typography variant="subtitle2" color="text.secondary">
+              Common Words:
+            </Typography>
+            <Box mt={1} display="flex" flexWrap="wrap" gap={1}>
+              {mostf.map((word) => (
+                <Chip key={word} label={word} color="primary" variant="outlined" />
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        <Divider sx={{ my: 2 }} />
+
+        <Typography variant="subtitle1" gutterBottom>
+          Feedbacks
+        </Typography>
+        {loading ? (
+          <CircularProgress size={24} />
+        ) : feedbacks.length === 0 ? (
+          <Typography variant="body2">No reviews yet</Typography>
+        ) : (
+          feedbacks.map((fb) => (
+            <Box key={fb.id} mb={2} borderBottom="1px solid #ccc" pb={1}>
+              <Typography variant="body2" fontWeight="bold">
+                {fb.email}
+              </Typography>
+              {fb.rating > 0 && (
+                <Rating value={fb.rating} readOnly size="small" />
               )}
-          </div>
-          
-
-          <div>
-            <div style={{ marginTop: "10px", textAlign: "left" }}>
-              <h6>Feedbacks:</h6>
-              {loading ? (
-                <p>Loading feedbacks...</p>
-              ) : feedbacks.length === 0 ? (
-                <p>No reviews yet</p>
-              ) : (
-                feedbacks.map((fb) => (
-                  <div
-                    key={fb.id}
-                    style={{ borderTop: "1px solid #ccc", paddingTop: "5px" }}
-                  >
-                    <strong>{fb.email}</strong>
-
-                    {fb.rating > 0 && (
-                      <div style={{ color: "#ffc107" }}>
-                        {"★".repeat(fb.rating)}
-                        {"☆".repeat(5 - fb.rating)}
-                      </div>
-                    )}
-
-                    {fb.review && <p>{fb.review}</p>}
-                    {fb.image && (
-                      <img
-                        src={fb.image}
-                        alt="Review"
-                        style={{
-                          width: "100%",
-                          maxHeight: "200px",
-                          objectFit: "contain",
-                          marginTop: "5px",
-                        }}
-                      />
-                    )}
-                  </div>
-                ))
+              {fb.review && (
+                <Typography variant="body2" mt={0.5}>
+                  {fb.review}
+                </Typography>
               )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+              {fb.image && (
+                <Box mt={1} sx={{ borderRadius: 1, overflow: "hidden" }}>
+                  <img
+                    src={fb.image}
+                    alt="Review"
+                    style={{ width: "100%", maxHeight: "200px", objectFit: "contain" }}
+                  />
+                </Box>
+              )}
+            </Box>
+          ))
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

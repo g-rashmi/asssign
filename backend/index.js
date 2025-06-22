@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
+const englishwords = new Set(require("word-list-json"));
 
 const app = express();
 
@@ -48,7 +49,11 @@ app.post("/api", async (req, res) => {
       const rawWords = review.toLowerCase().split(/\W+/);
       const filteredWords = sw.removeStopwords(rawWords);
 
-      for (const word of filteredWords) {
+      const Words = filteredWords.filter(
+        (word) => word.length > 3 && englishwords.has(word)
+      );
+
+      for (const word of Words) {
         if (!word) continue;
 
         const existing = await prisma.mostfreq.findUnique({

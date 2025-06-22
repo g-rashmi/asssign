@@ -1,87 +1,80 @@
+import { useNavigate } from "react-router-dom";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "../firebase";
+import { Box, Button, Typography, Avatar } from "@mui/material";
 
-import { useNavigate } from 'react-router-dom';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebase';
-
-
-function Login() { 
+function Login() {
   const navigate = useNavigate();
 
   const handleGoogle = async (e) => {
-    e.preventDefault();  
+    e.preventDefault();
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      console.log(result); 
-      localStorage.setItem("user", JSON.stringify({
-  googleId: result.user.uid,
-  name: result.user.displayName,
-  email: result.user.email
-}));
-     
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          googleId: result.user.uid,
+          name: result.user.displayName,
+          email: result.user.email,
+        })
+      );
 
-
-        navigate('/products');
-     
+      navigate("/products");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-  }
+  };
 
   return (
-    <div style={styles.container}>
-      <button onClick={handleGoogle} style={styles.button}>
-        <div style={styles.iconContainer}>
-          <img
-            src="https://freelogopng.com/images/all_img/1657955079google-icon-png.png"
-            alt="Google icon"
-            style={styles.icon}
-          />
-        </div>
-        <div style={styles.textContainer}>
-          <h2 style={styles.text}>Login with Google</h2>
-        </div>
-      </button>
-    </div>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%)",
+        padding: 2,
+      }}
+    >
+      <Button
+        onClick={handleGoogle}
+        variant="contained"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          padding: "10px 20px",
+          borderRadius: "12px",
+          backgroundColor: "#ffffff",
+          color: "#0b131b",
+          boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            transform: "scale(1.05)",
+            backgroundColor: "#f5f5f5",
+          },
+          textTransform: "none",
+          minWidth: { xs: "80%", sm: "auto" },
+        }}
+      >
+        <Avatar
+          src="https://freelogopng.com/images/all_img/1657955079google-icon-png.png"
+          sx={{ width: 28, height: 28, mr: 1 }}
+        />
+        <Typography
+          sx={{
+            fontWeight: "bold",
+            background: "linear-gradient(90deg, #0b131b, #010f1b)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontSize: { xs: "1rem", sm: "1.2rem" },
+          }}
+        >
+          Login with Google
+        </Typography>
+      </Button>
+    </Box>
   );
 }
-
-const styles = {
-  container: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-  },
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: '10px 20px',
-    border: '2px solid #0b131b',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'all 0.3s ease',
-  },
-  iconContainer: {
-    width: '30px',
-    marginRight: '10px',
-  },
-  icon: {
-    width: '100%',
-  },
-  textContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  text: {
-    fontWeight: 'bold',
-    background: 'linear-gradient(90deg, #0b131b, #010f1b)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    margin: 0,
-  },
-};
 
 export default Login;
