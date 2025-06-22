@@ -44,26 +44,35 @@ app.post("/api", async (req, res) => {
       },
     });
 
-    // Keyword extraction from review
     if (review) {
-      const rawWords = review.toLowerCase().split(/\W+/); // Split on non-word chars
+      const rawWords = review.toLowerCase().split(/\W+/);
       const filteredWords = sw.removeStopwords(rawWords);
 
       for (const word of filteredWords) {
         if (!word) continue;
 
         const existing = await prisma.mostfreq.findUnique({
-          where: { word },
+          where: {
+            word_productId: {
+              word,
+              productId,
+            },
+          },
         });
 
         if (existing) {
           await prisma.mostfreq.update({
-            where: { word },
+            where: {
+              word_productId: {
+                word,
+                productId,
+              },
+            },
             data: { count: existing.count + 1 },
           });
         } else {
           await prisma.mostfreq.create({
-            data: { word, count: 1 },
+            data: { word, count: 1, productId },
           });
         }
       }
@@ -137,17 +146,21 @@ app.get("/", (req, res) => {
 });
 
 app.get("/mfreq", async (req, res) => {
+  const productId = parseInt(req.query.productId);
   const most_freq = await prisma.mostfreq.findMany({
     where: {
       count: {
-        gt: 1,
+        gt: 0,
       },
+      productId,
     },
     orderBy: {
       count: "desc",
     },
+    take: 5,
   });
-  res.json(most_freq);
+  const words = most_freq.map((i) => i.word);
+  res.json(words);
 });
 
 const PORT = process.env.PORT || 4000;

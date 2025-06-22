@@ -10,7 +10,9 @@ function Product({ item }) {
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [image, setimage] = useState("");
+  const [mostf, setmostf] = useState([]);
   const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
@@ -23,7 +25,15 @@ function Product({ item }) {
       }
       setLoading(false);
     };
-
+    const fetchmostfreq = async () => {
+      try {
+        const res = await axios.get(`${back_url}/mfreq?productId=${item.id}`);
+        setmostf(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchmostfreq();
     fetchFeedbacks();
   }, [item.id, submitted]);
 
@@ -128,6 +138,21 @@ function Product({ item }) {
             {submitted ? "Submitted" : "Submit Review"}
           </button>
 
+          <div style={{ marginTop: "15px", textAlign: "left" }}>
+            {mostf.length > 0 && (
+                <div >
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {mostf.map((word) => (
+                      <span key={word} className="badge bg-primary-subtle text-primary px-2 py-1 rounded-pill">
+                        {word}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+          </div>
+          
+
           <div>
             <div style={{ marginTop: "10px", textAlign: "left" }}>
               <h6>Feedbacks:</h6>
@@ -142,14 +167,14 @@ function Product({ item }) {
                     style={{ borderTop: "1px solid #ccc", paddingTop: "5px" }}
                   >
                     <strong>{fb.email}</strong>
-                    <br />
+
                     {fb.rating > 0 && (
-                      <span style={{ color: "#ffc107" }}>
+                      <div style={{ color: "#ffc107" }}>
                         {"★".repeat(fb.rating)}
                         {"☆".repeat(5 - fb.rating)}
-                      </span>
+                      </div>
                     )}
-                    <br />
+
                     {fb.review && <p>{fb.review}</p>}
                     {fb.image && (
                       <img

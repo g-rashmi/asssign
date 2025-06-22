@@ -17,6 +17,7 @@ model Product {
   id         Int       @id @default(autoincrement())
   name       String
   feedbacks  Feedback[]
+  mostfreqs  Mostfreq[]
 }
 
 model Feedback {
@@ -33,8 +34,13 @@ model Feedback {
   @@unique([email,productId])
 }
 
-model mostfreq {
-  count   Int  
-  id         Int       @id @default(autoincrement())
-  word     String? @unique
+model Mostfreq {
+  id        Int     @id @default(autoincrement())
+  word      String
+  count     Int     @default(1)
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@unique([word, productId]) // Ensures uniqueness per product
 }
+
