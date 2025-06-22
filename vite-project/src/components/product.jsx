@@ -132,7 +132,7 @@ function Product({ item }) {
 
         <input
             type="file"
-            accept="image/*"
+          
             disabled={submitted}
             onChange={async (e) => {
               if (e.target.files.length > 0) {
