@@ -150,7 +150,7 @@ app.get("/mfreq", async (req, res) => {
   const most_freq = await prisma.mostfreq.findMany({
     where: {
       count: {
-        gt: 0,
+        gt: 1,
       },
       productId,
     },
