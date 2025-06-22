@@ -6,6 +6,7 @@ import { product } from "../config";
 import { Box, Typography, Grid } from "@mui/material";
 
 function Productlist() {
+
   return (
     <>
       <Navbar />
