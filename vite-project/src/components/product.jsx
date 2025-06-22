@@ -136,13 +136,8 @@ function Product({ item }) {
           onChange={async (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const base64String = reader.result.split(",")[1];
-              setImage(base64String);
-            };
-            reader.readAsDataURL(file);
+            const f = await toBase64(file);
+            setImage(f);
           }}
           className="form-control mb-3"
         />
@@ -206,13 +201,16 @@ function Product({ item }) {
               )}
               {fb.image && (
                 <Box mt={1} sx={{ borderRadius: 1, overflow: "hidden" }}>
-               
-  <img
-    src={`data:image/jpeg;base64,${fb.image}`}
-    style={{ width: "100%", maxHeight: "200px", objectFit: "contain" }}
-    alt="Review"
-/>
-
+                  <img
+                    src={fb.image}
+                    alt="Review"
+                    accept="image/*"
+                    style={{
+                      width: "100%",
+                      maxHeight: "200px",
+                      objectFit: "contain",
+                    }}
+                  />
                 </Box>
               )}
             </Box>
