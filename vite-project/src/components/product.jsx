@@ -140,7 +140,7 @@ function Product({ item }) {
             setImage(f);
           }}
           className="form-control mb-3"
-        />
+        />    
 
         <Box mb={2}>
           <Rating
