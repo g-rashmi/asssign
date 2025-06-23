@@ -2,12 +2,15 @@ import { useNavigate } from "react-router-dom";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
 import { Box, Button, Typography, Avatar } from "@mui/material";
+import { useState } from "react";
 
 function Login() {
   const navigate = useNavigate();
-
+const [load,setload]=useState(false);
   const handleGoogle = async (e) => {
     e.preventDefault();
+if(load)return ;
+setload(true);
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
@@ -23,6 +26,7 @@ function Login() {
       navigate("/products");
     } catch (error) {
       console.error(error);
+      setload(false);
     }
   };
 
