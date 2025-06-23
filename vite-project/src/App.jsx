@@ -3,7 +3,7 @@ import Login from "./components/Login";
  
 import Productlist from "./components/p";
 ``;
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route,Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 function App() {

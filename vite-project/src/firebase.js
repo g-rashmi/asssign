@@ -13,5 +13,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-setPersistence(auth,browserLocalPersistence).catch((error)=>{console.log(error)});
 export const auth = getAuth(app);
+setPersistence(auth,browserLocalPersistence).catch((error)=>{console.log(error)});
+
