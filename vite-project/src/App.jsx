@@ -9,6 +9,7 @@ import { auth } from "./firebase";
 function App() {
   const [user,setuser]=useState(null);
   const [load,setload]=useState(true);
+  
   useEffect(()=>{ 
 const fn=onAuthStateChanged(auth,(u)=>{
 setuser(u);

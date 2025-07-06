@@ -44,3 +44,16 @@ model Mostfreq {
   @@unique([word, productId]) // Ensures uniqueness per product
 }
 
+// TWO SUM ; 
+// [3,6,1,7,5] ; TARGET =8 ; 
+// O(N^2)-O(1) ;
+// set<int>st; 
+//for(int i=0;i<n;i++){
+// if(st.find(target-arr[i])!=st.end()){
+//   return true;
+// }
+// else{
+//   st.insert(arr[i]);
+// }
+// return false;
+// }

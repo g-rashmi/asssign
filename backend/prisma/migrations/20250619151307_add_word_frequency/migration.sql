@@ -7,4 +7,4 @@ CREATE TABLE "mostfreq" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "mostfreq_word_key" ON "mostfreq"("word");
+CREATE UNIQUE INDEX "mostfreq_word_key" ON "mostfreq"("word"); 

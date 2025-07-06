@@ -21,4 +21,8 @@ CREATE TABLE "Mostfreq" (
 CREATE UNIQUE INDEX "Mostfreq_word_productId_key" ON "Mostfreq"("word", "productId");
 
 -- AddForeignKey
-ALTER TABLE "Mostfreq" ADD CONSTRAINT "Mostfreq_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Mostfreq" ADD CONSTRAINT "Mostfreq_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE; 
+
+
+//digital clock->hr and min form ->right angle  ; 
+
