@@ -17,6 +17,7 @@ setload(false);
 return ()=>fn();
 })
   },[])
+  
   if(load){<div>loading ... </div>}
   return (
     <div>
