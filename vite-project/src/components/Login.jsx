@@ -13,16 +13,7 @@ if(load)return ;
 setload(true);
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          googleId: result.user.uid,
-          name: result.user.displayName,
-          email: result.user.email,
-        })
-      );
-
+       await signInWithPopup(auth, provider);
       navigate("/products");
     } catch (error) {
       console.error(error);

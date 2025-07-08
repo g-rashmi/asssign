@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { onAuthStateChanged } from "firebase/auth";
 import { back_url } from "../b.js";
 import {
   Card,
@@ -16,17 +17,23 @@ import {
   Grid,
   Avatar,
 } from "@mui/material";
-
+import { auth } from "../firebase.js"
 function Product({ item }) {
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(0);
+   const [user,setuser]=useState(null);
   const [loading, setLoading] = useState(true);
   const [feedbacks, setFeedbacks] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [image, setImage] = useState("");
   const [mostf, setMostf] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
-
+  //const user = JSON.parse(localStorage.getItem("user"));
+useEffect(()=>{ 
+const fn=onAuthStateChanged(auth,(u)=>{
+setuser(u);
+return ()=>fn();
+})
+  },[]);
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
