@@ -2,15 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 const englishwords = new Set(require("word-list-json"));
-
-const app = express();
-
-const prisma = new PrismaClient();
 const sw = require("stopword");
 
-app.use(cors()); 
-app.use(express.json({limit:"10000mb"}));
-app.use(express.urlencoded({extended:true,limit:"10000mb"}));  
+const app = express();
+const prisma = new PrismaClient();
+
+app.use(cors());
+app.use(express.json({ limit: "10000mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10000mb" }));
 
 
 app.post("/api", async (req, res) => {
@@ -50,7 +49,6 @@ app.post("/api", async (req, res) => {
     if (review) {
       const rawWords = review.toLowerCase().split(/\W+/);
       const filteredWords = sw.removeStopwords(rawWords);
-
       const Words = filteredWords.filter(
         (word) => word.length > 3 && englishwords.has(word)
       );
@@ -111,16 +109,13 @@ app.get("/check-feedback", async (req, res) => {
       },
     });
 
-    if (existing) {
-      return res.json({ exists: true });
-    } else {
-      return res.json({ exists: false });
-    }
+    res.json({ exists: !!existing });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error });
+    res.status(500).json({ error: "Error checking feedback" });
   }
 });
+
 
 app.get("/feed", async (req, res) => {
   const { productId } = req.query;
@@ -139,37 +134,52 @@ app.get("/feed", async (req, res) => {
   }
 });
 
+
 app.get("/products", async (req, res) => {
-  const f = await prisma.product.findMany({
-    include: {
-      feedbacks: true,
-    },
-  });
-  res.json(f);
+  try {
+    const f = await prisma.product.findMany({
+      include: {
+        feedbacks: true,
+      },
+    });
+    res.json(f);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching products" });
+  }
+});
+
+app.get("/mfreq", async (req, res) => {
+  try {
+    const productId = parseInt(req.query.productId);
+    const most_freq = await prisma.mostfreq.findMany({
+      where: {
+        count: {
+          gt: 0,
+        },
+        productId,
+      },
+      orderBy: {
+        count: "desc",
+      },
+      take: 5,
+    });
+
+    const words = most_freq.map((i) => i.word);
+    res.json(words);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error fetching frequent words" });
+  }
 });
 
 app.get("/", (req, res) => {
   res.send("hii there");
 });
 
-app.get("/mfreq", async (req, res) => {
-  const productId = parseInt(req.query.productId);
-  const most_freq = await prisma.mostfreq.findMany({
-    where: {
-      count: {
-        gt: 0,
-      },
-      productId,
-    },
-    orderBy: {
-      count: "desc",
-    },
-    take: 5,
-  });
-  const words = most_freq.map((i) => i.word);
-  res.json(words);
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
 });
-
 
 
 const PORT = process.env.PORT || 2020;
