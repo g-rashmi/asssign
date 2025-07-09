@@ -7,7 +7,8 @@ import { back_url } from "./b";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
-import {axios} from "axios"
+import axios from "axios"
+
 function App() {
   const [user, setUser] = useState(null);
   const [load, setLoad] = useState(true);
@@ -21,6 +22,8 @@ useEffect(() => {
       console.error("server is starting ..wait...");
       console.log(error);
     } finally {
+      console.log("loading:", load, "serverWaking:", serverWaking);
+
       setServerWaking(false);
     }
   };

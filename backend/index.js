@@ -8,9 +8,11 @@ const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors());
-app.use(express.json({ limit: "10000mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10000mb" }));
+// app.use(express.json({ limit: "10000mb" }));
+// app.use(express.urlencoded({ extended: true, limit: "10000mb" }));
 
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.post("/api", async (req, res) => {
   const { productId, rating, review, email, image } = req.body;
@@ -41,7 +43,8 @@ app.post("/api", async (req, res) => {
         rating,
         review,
         email,
-        image,
+        image: image?.trim()
+,
         product: { connect: { id: productId } },
       },
     });
